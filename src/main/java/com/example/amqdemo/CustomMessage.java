@@ -8,20 +8,20 @@ public final class CustomMessage implements Serializable {
     private String text;
     private int sequence;
     private boolean secret;
-//    private LocalDateTime sent;
+    private LocalDateTime sent;
 
     public CustomMessage() {
     }
 
     public CustomMessage(String text,
                          int sequence,
-                         boolean secret //,
-//                         LocalDateTime sent
+                         boolean secret,
+                         LocalDateTime sent
                          ) {
         this.text = text;
         this.sequence = sequence;
         this.secret = secret;
-//        this.sent = sent;
+        this.sent = sent;
     }
 
     public String getText() {
@@ -36,9 +36,9 @@ public final class CustomMessage implements Serializable {
         return secret;
     }
 
-//    public LocalDateTime getSent() {
-//        return sent;
-//    }
+    public LocalDateTime getSent() {
+        return sent;
+    }
 
     @Override
     public String toString() {
@@ -46,7 +46,7 @@ public final class CustomMessage implements Serializable {
                 "text='" + text + "'" +
                 ", sequence=" + sequence +
                 ", secret=" + secret +
-//                ", sent=" + sent +
+                ", sent=" + sent +
                 '}';
     }
 }

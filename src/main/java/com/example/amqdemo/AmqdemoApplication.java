@@ -1,5 +1,11 @@
 package com.example.amqdemo;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
@@ -42,6 +49,15 @@ public class AmqdemoApplication {
 	}
 
 	@Bean
+	@Primary
+	public ObjectMapper geObjMapper(){
+		return new ObjectMapper()
+				.registerModule(new ParameterNamesModule())
+				.registerModule(new Jdk8Module())
+				.registerModule(new JavaTimeModule());
+	}
+
+	@Bean
 	public JmsListenerContainerFactory<?> myFactory(CachingConnectionFactory connectionFactory,
 													DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -52,8 +68,12 @@ public class AmqdemoApplication {
 	}
 
 	@Bean // Serialize message content to json using TextMessage
-	public MessageConverter jacksonJmsMessageConverter() {
+	public MessageConverter jacksonJmsMessageConverter(ObjectMapper objectMapper) {
+		objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+		converter.setObjectMapper(objectMapper);
 		converter.setTargetType(MessageType.TEXT);
 		converter.setTypeIdPropertyName("_type");
 		return converter;
@@ -66,7 +86,6 @@ public class AmqdemoApplication {
 		// Send a message with a POJO - the template reuse the message converter
 		System.out.println("Sending a message.");
 		jmsTemplate.convertAndSend("topic1",
-				new CustomMessage("Topic 1 message", sequence1++, false));
-//				new CustomMessage("Topic 1 message", sequence1++, false, LocalDateTime.now()));
+				new CustomMessage("Topic 1 message", sequence1++, false, LocalDateTime.now()));
 	}
 }
