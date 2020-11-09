@@ -4,8 +4,8 @@ services:
     image: "vromero/activemq-artemis"
     environment:
       - TZ=Australia/Sydney
-#      - ARTEMIS_USERNAME=admin
-#      - ARTEMIS_PASSWORD=admin
+      - ARTEMIS_USERNAME=admin
+      - ARTEMIS_PASSWORD=admin
     ports:
       - "8161:8161"
       - "61616:61616"

@@ -58,7 +58,7 @@ public class AmqdemoApplication {
 	}
 
 	@Bean
-	public JmsListenerContainerFactory<?> myFactory(CachingConnectionFactory connectionFactory,
+	public JmsListenerContainerFactory<?> factory(CachingConnectionFactory connectionFactory,
 													DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		// This provides all boot's default to this factory, including the message converter
@@ -83,9 +83,11 @@ public class AmqdemoApplication {
 	public void sender() {
 		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 
-		// Send a message with a POJO - the template reuse the message converter
+		// Send a message with a POJO - the template reuses the message converter
 		System.out.println("Sending a message.");
 		jmsTemplate.convertAndSend("topic1",
 				new CustomMessage("Topic 1 message", sequence1++, false, LocalDateTime.now()));
+		jmsTemplate.convertAndSend("topic2",
+				new CustomMessage("Topic 2 message", sequence2++, false, LocalDateTime.now()));
 	}
 }
