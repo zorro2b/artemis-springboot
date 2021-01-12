@@ -9,3 +9,33 @@ services:
     ports:
       - "8161:8161"
       - "61616:61616"
+  pub:
+    image: "amqdemo:latest"
+    environment:
+      - TZ=Australia/Sydney
+      - SPRING_ARTEMIS_HOST=amq
+      - SPRING_PROFILES_ACTIVE=publisher
+      - CLIENT_ID=pub
+      - MAX_SEND=1
+    depends_on:
+      - amq
+  sub1:
+    image: "amqdemo:latest"
+    environment:
+      - TZ=Australia/Sydney
+      - SPRING_ARTEMIS_HOST=amq
+      - SPRING_PROFILES_ACTIVE=subscriber1
+      - CLIENT_ID=sub1
+    depends_on:
+      - amq
+      - pub
+  sub2:
+    image: "amqdemo:latest"
+    environment:
+      - TZ=Australia/Sydney
+      - SPRING_ARTEMIS_HOST=amq
+      - SPRING_PROFILES_ACTIVE=subscriber2
+      - CLIENT_ID=sub2
+    depends_on:
+      - amq
+      - pub

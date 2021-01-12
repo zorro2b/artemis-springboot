@@ -6,43 +6,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.jms.annotation.EnableJms;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import javax.jms.ConnectionFactory;
-import java.time.LocalDateTime;
-import java.util.Random;
 
 @SpringBootApplication
 @EnableJms
 @EnableScheduling
 public class AmqdemoApplication {
-	private final ConfigurableApplicationContext context;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private static int sequence1 = 0;
-	private static int sequence2 = 0;
-	private Random random = new Random();
-
-	public AmqdemoApplication(ConfigurableApplicationContext context) {
-		this.context = context;
-	}
+	@Value("${CLIENT_ID}")
+	private String clientId;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AmqdemoApplication.class, args);
@@ -59,11 +47,16 @@ public class AmqdemoApplication {
 
 	@Bean
 	public JmsListenerContainerFactory<?> factory(CachingConnectionFactory connectionFactory,
-													DefaultJmsListenerContainerFactoryConfigurer configurer) {
+												  DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		// This provides all boot's default to this factory, including the message converter
 		configurer.configure(factory, connectionFactory);
-		// You could still override some of Boot's default if necessary.
+//		factory.setClientId(clientId);
+//		factory.setSubscriptionDurable(true);
+//		factory.setSubscriptionShared(true); // TODO not working
+//		factory.setConcurrency("1"); // TODO not needed?
+		connectionFactory.setClientId(clientId);
+
 		return factory;
 	}
 
@@ -77,17 +70,5 @@ public class AmqdemoApplication {
 		converter.setTargetType(MessageType.TEXT);
 		converter.setTypeIdPropertyName("_type");
 		return converter;
-	}
-
-	@Scheduled(fixedRate = 5000)
-	public void sender() {
-		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-
-		// Send a message with a POJO - the template reuses the message converter
-		System.out.println("Sending a message.");
-		jmsTemplate.convertAndSend("topic1",
-				new CustomMessage("Topic 1 message", sequence1++, false, LocalDateTime.now()));
-		jmsTemplate.convertAndSend("topic2",
-				new CustomMessage("Topic 2 message", sequence2++, false, LocalDateTime.now()));
 	}
 }
