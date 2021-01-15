@@ -16,7 +16,8 @@ services:
       - SPRING_ARTEMIS_HOST=amq
       - SPRING_PROFILES_ACTIVE=publisher
       - CLIENT_ID=pub
-      - MAX_SEND=1
+      - PUB_SUB_DOMAIN=true
+      - DURABLE=false
     depends_on:
       - amq
   sub1:
@@ -26,9 +27,10 @@ services:
       - SPRING_ARTEMIS_HOST=amq
       - SPRING_PROFILES_ACTIVE=subscriber1
       - CLIENT_ID=sub1
+      - PUB_SUB_DOMAIN=false
+      - DURABLE=false
     depends_on:
       - amq
-      - pub
   sub2:
     image: "amqdemo:latest"
     environment:
@@ -36,6 +38,7 @@ services:
       - SPRING_ARTEMIS_HOST=amq
       - SPRING_PROFILES_ACTIVE=subscriber2
       - CLIENT_ID=sub2
+      - PUB_SUB_DOMAIN=false
+      - DURABLE=false
     depends_on:
       - amq
-      - pub

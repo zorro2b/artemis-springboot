@@ -18,7 +18,6 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
-import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
@@ -31,6 +30,12 @@ public class AmqdemoApplication {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Value("${CLIENT_ID}")
 	private String clientId;
+
+	@Value("${PUB_SUB_DOMAIN}")
+	private boolean pubSubDomain;
+
+	@Value("${DURABLE}")
+	private boolean durable;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AmqdemoApplication.class, args);
@@ -49,12 +54,16 @@ public class AmqdemoApplication {
 	public JmsListenerContainerFactory<?> factory(CachingConnectionFactory connectionFactory,
 												  DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+
+		logger.info("Configuring JMS with clientId "+clientId);
+
 		// This provides all boot's default to this factory, including the message converter
 		configurer.configure(factory, connectionFactory);
-//		factory.setClientId(clientId);
-//		factory.setSubscriptionDurable(true);
-//		factory.setSubscriptionShared(true); // TODO not working
-//		factory.setConcurrency("1"); // TODO not needed?
+		factory.setPubSubDomain(pubSubDomain);
+		factory.setClientId(clientId);
+		factory.setSubscriptionDurable(durable);
+//		factory.setSubscriptionShared(true);
+//		factory.setConcurrency("1");
 		connectionFactory.setClientId(clientId);
 
 		return factory;
