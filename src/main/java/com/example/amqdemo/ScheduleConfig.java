@@ -26,7 +26,7 @@ public class ScheduleConfig {
     @Scheduled(fixedRate = 5000)
     public void sender() {
         // Send a message with a POJO - the template reuses the message converter
-        System.out.println("Sending a message.");
+        logger.info("Sending a message.");
         jmsTemplate.convertAndSend("topic1",
                 new CustomMessage("Topic 1 message", sequence1++, false, LocalDateTime.now()));
         jmsTemplate.convertAndSend("topic2",
