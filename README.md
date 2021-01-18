@@ -8,7 +8,7 @@ Use:
 
 To start an Artemis server with one publisher and two subscribers.
 
-The pubisher will log when it sends messages and the subscribers will og when a message is received,
+The publisher will log when it sends messages and the subscribers will og when a message is received,
 for example:
 
     pub_1   | 2021-01-15 15:32:35.525  INFO 1 --- [   scheduling-1] com.example.amqdemo.ScheduleConfig       : Sending a message.
@@ -19,5 +19,5 @@ Messages are sent from ScheduleConfig.java.
 
 The JmsListenerContainerFactory is set up as a bean in AmqdemoAppication.java.
 
-Note that the subscriptions can be set to durable with "DURABLE=true",
-however this currently results in the messages not being received by the subscribers.
+When using durable queues, you can shutdown the subscribers and then start them
+up again to see that they still receive messages that were sent while they were down.

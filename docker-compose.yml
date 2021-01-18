@@ -16,8 +16,7 @@ services:
       - SPRING_ARTEMIS_HOST=amq
       - SPRING_PROFILES_ACTIVE=publisher
       - CLIENT_ID=pub
-      - PUB_SUB_DOMAIN=true
-      - DURABLE=false
+      - DURABLE=true
     depends_on:
       - amq
   sub1:
@@ -27,8 +26,7 @@ services:
       - SPRING_ARTEMIS_HOST=amq
       - SPRING_PROFILES_ACTIVE=subscriber1
       - CLIENT_ID=sub1
-      - PUB_SUB_DOMAIN=false
-      - DURABLE=false
+      - DURABLE=true
     depends_on:
       - amq
   sub2:
@@ -38,7 +36,6 @@ services:
       - SPRING_ARTEMIS_HOST=amq
       - SPRING_PROFILES_ACTIVE=subscriber2
       - CLIENT_ID=sub2
-      - PUB_SUB_DOMAIN=false
-      - DURABLE=false
+      - DURABLE=true
     depends_on:
       - amq

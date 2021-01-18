@@ -31,9 +31,6 @@ public class AmqdemoApplication {
 	@Value("${CLIENT_ID}")
 	private String clientId;
 
-	@Value("${PUB_SUB_DOMAIN}")
-	private boolean pubSubDomain;
-
 	@Value("${DURABLE}")
 	private boolean durable;
 
@@ -59,7 +56,7 @@ public class AmqdemoApplication {
 
 		// This provides all boot's default to this factory, including the message converter
 		configurer.configure(factory, connectionFactory);
-		factory.setPubSubDomain(pubSubDomain);
+		factory.setPubSubDomain(true);
 		factory.setClientId(clientId);
 		factory.setSubscriptionDurable(durable);
 //		factory.setSubscriptionShared(true);

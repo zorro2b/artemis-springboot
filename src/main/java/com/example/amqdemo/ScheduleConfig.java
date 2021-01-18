@@ -2,6 +2,7 @@ package com.example.amqdemo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +22,8 @@ public class ScheduleConfig {
 
     public ScheduleConfig(JmsTemplate jmsTemplate) {
         this.jmsTemplate = jmsTemplate;
+
+        jmsTemplate.setPubSubDomain(true);
     }
 
     @Scheduled(fixedRate = 5000)
